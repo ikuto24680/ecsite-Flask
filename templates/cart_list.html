@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <!--Import Google Icon Font-->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!-- Import Materialize CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- Import Font Wesome -->
+    <link
+      href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/header.css}" />
+    <link rel="stylesheet" th:href="@{/css/footer.css}" />
+    <link rel="stylesheet" th:href="@{/css/register_admin.css}" />
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+    <link rel="stylesheet" th:href="@{/css/item_list.css}" />
+    <link rel="stylesheet" th:href="@{/css/item_detail.css}" />
+    <link rel="stylesheet" th:href="@{/css/cart_list.css}" />
+    <link rel="stylesheet" th:href="@{/css/order_confirm.css}" />
+    <link rel="stylesheet" th:href="@{/css/order_finished.css}" />
+    <link rel="stylesheet" th:href="@{/css/responsive.css}" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>らくらくcoffee</title>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header">
+          <div class="header-left">
+             <a th:href="@{/}">
+					   <img class="logo" th:src="@{/img/header_logo.png}" />
+            </a>
+          </div>
+
+          <div class="header-right">
+            <a th:href="@{/}">商品一覧</a>
+            <a  th:href="@{/insertUser/toInsert}" >会員登録</a>
+            <a th:href="@{/cart/showCart#}"><i class="fas fa-shopping-cart"></i>カート  <span th:text="${session.orderItemCount}"></span></a>
+            <span th:unless="${session.user}">
+            <a th:href="@{/loginUser/toLogin}" class="login"><i class="fas fa-sign-in-alt"></i>ログイン</a> 
+			</span>
+			<span th:if="${session.user}"> <a th:href="@{/logoutUser/logout}">ログアウト</a>
+            </span>
+             <a th:href="@{/orderHistory/}">注文履歴</a>
+			<span th:if="${session.userName}" th:text="${session.userName} + 'さんこんにちは'">山田太郎</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="top-wrapper">
+      <div class="container">
+        <h1 class="page-title">ショッピングカート</h1>
+        <!-- table -->
+        <div th:if="${order == null}" th:text="${NoOrder}"></div>
+        <div th:unless="${order == null}">
+        <div class="row">
+          <table class="striped">
+            <thead>
+              <tr>
+                <th class="cart-table-th">商品名</th>
+                <th>サイズ、価格(税抜)、数量</th>
+                <th>トッピング、価格(税抜)</th>
+                <th>小計</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr  th:each="orderItem : ${order.orderItemList}" >
+                <td class="cart-item-name">
+                  <div class="cart-item-icon">
+                    <img src="img/1.jpg" th:src="@{/img/}+${orderItem.item.imagePath}"/>
+                  </div>
+                  <span th:text="${orderItem.item.name}">ハワイアンパラダイス</span>
+                </td>
+                 <td>
+                  <span class="price" th:text="${'&nbsp;'+orderItem.size}" >&nbsp;Ｌ</span >
+                  <span th:if="${orderItem.size.compareTo('M') == 0}" th:text="${'&nbsp;&nbsp;'+orderItem.item.priceM+'円'}" >&nbsp;&nbsp;2,380円</span>
+                  <span th:if="${orderItem.size.compareTo('L') == 0}" th:text="${'&nbsp;&nbsp;'+orderItem.item.priceL+'円'}" ></span>
+                  <span th:text="${'&nbsp;&nbsp;'+orderItem.quantity+'個'}">&nbsp;&nbsp;1個</span>
+                </td>
+                <td>
+                  <ul>
+                    <li th:if="${orderItem.size.compareTo('M') == 0}" th:each="orderTopping : ${orderItem.orderToppingList}" 
+                    th:text="${orderTopping.topping.name+' 200円'}" >
+                    </li>
+                    <li th:if="${orderItem.size.compareTo('L') == 0}" th:each="orderTopping : ${orderItem.orderToppingList}" 
+                    th:text="${orderTopping.topping.name+' 300円'}" >
+                    </li>
+                  </ul>
+                </td>
+                <td><div class="text-center" th:text="'小計　'+${#numbers.formatInteger(orderItem.getSubTotal,1,'COMMA')}+' 円'">3,280円</div></td>
+                <td>
+                <form th:action="@{/cart/deleteOrderItem}" method="post">
+                  <button class="btn" type="submit">
+                    <span>削除</span>
+                  </button>
+                    <input type="hidden" name="orderItemId" th:value="${orderItem.id}"/>
+                    <input type="hidden" name="toOrderConfirm" value="toCartList">
+                </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row cart-total-price">
+          <div th:text="'消費税 '+${#numbers.formatInteger(order.getTax,1,'COMMA')}+' 円'">消費税：8,000円</div>
+          <div th:text="'ご注文合計金額 '+${#numbers.formatInteger(order.getCalcTotalPrice,1,'COMMA')}+' 円'">ご注文金額合計：38,000円 (税込)</div>
+        </div>
+        <div class="row order-confirm-btn">
+        <form th:action="@{/order/toOrder}">
+          <button
+            class="btn"
+          >
+            <span>注文に進む</span>
+          </button></form>
+        </div>
+      </div>
+      <!-- end container -->
+    </div>
+        </div>
+    <!-- end top-wrapper -->
+    <footer>
+      <div class="container">
+        <img src="img/header_logo.png" th:src="@{/img/header_logo.png}" />
+        <p>ホッと一息できるひとときを、あなたに！</p>
+      </div>
+    </footer>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </body>
+</html>

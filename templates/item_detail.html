@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Import Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <!-- Import Font Wesome -->
+  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/header.css}" />
+  <link rel="stylesheet" th:href="@{/css/footer.css}" />
+  <link rel="stylesheet" th:href="@{/css/register_admin.css}" />
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+  <link rel="stylesheet" th:href="@{/css/item_list.css}" />
+  <link rel="stylesheet" th:href="@{/css/item_detail.css}" />
+  <link rel="stylesheet" th:href="@{/css/cart_list.css}" />
+  <link rel="stylesheet" th:href="@{/css/order_confirm.css}" />
+  <link rel="stylesheet" th:href="@{/css/order_finished.css}" />
+  <link rel="stylesheet" th:href="@{/css/responsive.css}" />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>らくらくcoffee</title>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="header">
+        <div class="header-left">
+          <a th:href="@{/}">
+            <img class="logo" th:src="@{/img/header_logo.png}" />
+          </a>
+        </div>
+
+        <div class="header-right">
+          <a th:href="@{/}">商品一覧</a>
+          <a th:href="@{/insertUser/toInsert}">会員登録</a>
+          <a th:href="@{/cart/showCart#}">
+            <i class="fas fa-shopping-cart"> </i>カート <span th:text="${session.orderItemCount}"></span>
+          </a>
+          <span th:unless="${session.user}">
+            <a th:href="@{/loginUser/toLogin}" class="login"><i class="fas fa-sign-in-alt"></i>ログイン</a>
+          </span>
+          <span th:if="${session.user}"> <a th:href="@{/logoutUser/logout}">ログアウト</a>
+          </span>
+          <a th:href="@{/orderHistory/}">注文履歴</a>
+          <span th:if="${session.userName}" th:text="${session.userName} + 'さんこんにちは'">山田太郎</span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <form action="/cart/insertOrderItem}" method="post">
+    <div class="top-wrapper">
+      <div class="container">
+        <h1 class="page-title">{{item.name}}</h1>
+        <input type="hidden" name="itemId" value="{{item.id}}">
+        <div class="row">
+          <div class="row item-detail">
+            <div class="item-icon">
+              <img src="{{url_for('static',filename='img/{}.jpg'.format(item.id))}}">
+            </div>
+            <div class="item-intro">{{item.description}}
+            </div>
+          </div>
+          <div class="row item-size">
+            <div class="item-hedding">サイズ</div>
+            <div>
+              <input type="hidden" id="priceM" value="{{item.price_m}}">
+              <input type="hidden" id="priceL" value="{{item.price_l}}">
+              <label>
+                <input id="size-m" name="size" type="radio" class="size_radio" value="M" checked="checked" />
+                <span>
+                  &nbsp;<span class="price">Ｍ</span><span>
+                    {{item.price_m}}(税抜)</span></span>
+              </label>
+              <label>
+                <input id="size-l" name="size" type="radio" class="size_radio" value="L" />
+                <span>
+                  &nbsp;<span class="price">Ｌ</span><span>
+                    {{item.price_l}}(税抜)</span></span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+        <div class="row item-toppings">
+          <div class="item-hedding">
+            トッピング：&nbsp;1つにつき
+            <span>&nbsp;Ｍ&nbsp;</span>&nbsp;&nbsp;200円(税抜)
+            <span>&nbsp;Ｌ</span>&nbsp;&nbsp;300円(税抜)
+          </div>
+          <div>
+            {% for topping in toppingList %}
+            <label class="item-topping">
+              <input type="checkbox" id="topping" class="topping" name="toppingList" value="{{topping.id}}" />
+              <span>{{topping.name}}</span>
+            </label>
+            {% endfor %}
+          </div>
+          <input class="btn" type="button" onClick="checkAllBox(true)" value="全選択">
+          <input class="btn" type="button" onClick="checkAllBox(false)" value="全解除">
+
+          <script th:src="@{/js/allchack_button.js}"></script>
+
+        </div>
+        <div class="row item-quantity">
+          <div class="item-hedding item-hedding-quantity">数量</div>
+          <div class="item-quantity-selectbox">
+            <div class="input-field col s12">
+
+              <select class="browser-default" id="quantity" name="quantity">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row item-total-price">
+          <span>この商品金額：<span id="show-total-price"></span> 円(税抜)</span>
+        </div>
+        <div class="row item-cart-btn">
+          <button class="btn" type="submit">
+            <i class="material-icons left">add_shopping_cart</i>
+            <span>カートに入れる</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- end container -->
+
+  </form>
+  <!-- end top-wrapper -->
+  <footer>
+    <div class="container">
+      <img src="{{ url_for('static',filename='img/header_logo.png')}}" />
+      <p>ホッと一息できるひとときを、あなたに！</p>
+    </div>
+  </footer>
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+  <script src="../js/item_detail.js"></script>
+</body>
+
+</html>

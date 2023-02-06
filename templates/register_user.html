@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Import Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <!-- Import Font Wesome -->
+  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/header.css}" />
+  <link rel="stylesheet" th:href="@{/css/footer.css}" />
+  <link rel="stylesheet" th:href="@{/css/register_admin.css}" />
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+  <link rel="stylesheet" th:href="@{/css/item_list.css}" />
+  <link rel="stylesheet" th:href="@{/css/item_detail.css}" />
+  <link rel="stylesheet" th:href="@{/css/cart_list.css}" />
+  <link rel="stylesheet" th:href="@{/css/order_confirm.css}" />
+  <link rel="stylesheet" th:href="@{/css/order_finished.css}" />
+  <link rel="stylesheet" th:href="@{/css/responsive.css}" />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>らくらくcoffee</title>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="header">
+        <div class="header-left">
+          <a th:href="@{/}">
+            <img class="logo" th:src="@{/img/header_logo.png}" />
+          </a>
+        </div>
+
+        <div class="header-right">
+          <a th:href="@{/}">商品一覧</a>
+          <a th:href="@{/insertUser/toInsert}">会員登録</a>
+          <span th:unless="${session.user}">
+            <a th:href="@{/loginUser/toLogin}" class="login">
+              <i class="fas fa-sign-in-alt"></i>ログイン </a>
+          </span>
+          <span th:if="${session.user}">
+            <a th:href="@{/logoutUser/logout}">ログアウト</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="top-wrapper">
+    <div class="container">
+      <div class="row register-page">
+        <form action="/register" method="post">
+          <h3>{{registerError}}</h3>
+          <div th:errors="*{lastName}" class="error">姓を入力して下さい</div>
+          <div th:errors="*{firstName}" class="error">名を入力して下さい</div>
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="last_name" type="text" class="validate" name="lastName" th:field="*{lastName}" />
+              <label for="last_name">姓</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="first_name" type="text" class="validate" name="firstName" th:field="*{firstName}" />
+              <label for="first_name">名</label>
+            </div>
+          </div>
+          <div th:errors="*{email}" class="error">メールアドレスの形式が不正です</div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="email" type="email" class="validate" name="email" th:field="*{email}" />
+              <label for="email">メールアドレス(@を含んでください)</label>
+            </div>
+          </div>
+          <div class="error" th:errors="*{zipcode}">郵便番号はXXX-XXXXの形式で入力してください</div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="zipcode" type="text" name="zipcode" maxlength="8" th:field="*{zipcode}" />
+              <label for="zipcode">郵便番号は(XXX-XXXXの形式で入力して下さい)</label>
+              <button id="zipcode_btn" class="btn" type="button">
+                <span>住所検索</span>
+              </button>
+            </div>
+          </div>
+          <div class="error" th:errors="*{address}">住所を入力して下さい</div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="address" type="text" name="address" th:field="*{address}" />
+              <label for="address">住所</label>
+            </div>
+          </div>
+          <div class="error" th:errors="*{telephone}">
+            電話番号はXXX-XXXX-XXXXの形式で入力してください
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="tel" type="tel" name="telephone" th:field="*{telephone}" />
+              <label for="tel">電話番号(ーを含んでください)</label>
+            </div>
+          </div>
+          <div class="error" th:errors="*{password}">
+            パスワードは８文字以上１６文字以内で設定してください
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="password" type="password" class="validate" name="password" th:field="*{password}"
+                minlength="8" />
+
+              <label for="password">パスワード(８文字以上１６文字以内で設定してください)</label>
+            </div>
+          </div>
+
+          <div class="error" th:errors="*{confimationPassword}">パスワードと確認用パスワードが不一致です</div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="confirmation_password" type="password" class="validate" name="confimationPassword"
+                th:field="*{confimationPassword}" minlength="8" />
+              <label for="confirmation_password">確認用パスワード</label>
+            </div>
+          </div>
+          <div class="row register-admin-btn">
+            <button class="btn" type="submit">
+              <span>登録<i class="material-icons right">done</i></span>
+            </button>
+          </div>
+        </form>
+        <!-- form end -->
+      </div>
+    </div>
+    <!-- end container-->
+  </div>
+  <!-- end top-wrapper -->
+  <footer>
+    <div class="container">
+      <img th:src="@{/img/header_logo.png}" />
+      <p>ホッと一息できるひとときを、あなたに！</p>
+    </div>
+  </footer>
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+  <script src="../js/get_address.js"></script>
+</body>
+
+</html>

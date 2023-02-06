@@ -1,0 +1,1 @@
+INSERT INTO users ( name, email, password, zipcode, address, telephone) VALUES (:name, :email, :password, :zipcode, :address, :telephone);

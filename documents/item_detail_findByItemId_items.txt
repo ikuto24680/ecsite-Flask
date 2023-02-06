@@ -1,0 +1,1 @@
+SELECT items.id, items.name, items.description, items.price_m, items.price_l, items.image_path FROM items WHERE items.id = :itemId;
