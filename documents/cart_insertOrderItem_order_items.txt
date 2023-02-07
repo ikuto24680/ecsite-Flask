@@ -1,1 +1,1 @@
-INSERT INTO order_items (item_id, order_id, quantity, size) VALUES (:item_id, :order_id, :quantity, :size);
+INSERT INTO order_items (item_id, order_id, quantity, size,subtotal) VALUES (:item_id, :order_id, :quantity, :size, :subtotal);

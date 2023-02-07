@@ -1,7 +1,8 @@
 from flask import Flask, render_template, redirect, request,  url_for, session, json
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text
 from sqlalchemy.sql import select, insert
-from MainModel import users, items, toppings, orders, order_items, order_toppings
+import SubMethods
+# from MainModel import users, items, toppings, orders, order_items, order_toppings
 
 ecsite = Flask(__name__)
 
@@ -132,16 +133,19 @@ def cart():
 
     if 'id' in session:
 
+        id = session['id']
         if request.method == "POST":
             # order = session.get['user']
             itemId = request.form['itemId']
             size = request.form['size']
             toppingList = request.form['toppingList']
+            print("toppingList".format(toppingList))
             quantity = request.form['quantity']
-            iteminsert = insert(items)
-            inserteditems = select(items)
+            subtotal = SubMethods.subtotal(itemId, size, toppingList, quantity)
+            print("subtotal={}".format(subtotal))
 
-        id = session['id']
+            # ここの段階までにsubtotalを出しておく。
+
         # そのユーザーに注文前のOrderが存在するかどうか
         with open('documents/cart_findOrderByUserId_orders.txt', 'r') as txt:
             orderselect = text(txt.readline())
@@ -165,16 +169,13 @@ def cart():
         # この時点ではログイン中ユーザーのOrdersが存在している前提
         # 1つの注文前Orderをfor文で取り出す
         for order in connOrderPlus:
-            print("for文内")
-            print(order)
-            print(type(order))
             # orderId = order.id
             # OrderIdを基にOrderItemsをInsert
             with open('documents/cart_insertOrderItem_order_items.txt', 'r') as txt:
                 orderItemInsert = text(txt.readline())
                 print("order.id={}".format(order.id))
                 connOrderItem = conn.execute(orderItemInsert, {
-                    "item_id": itemId, "order_id": order.id, "quantity": quantity, "size": size})
+                    "item_id": itemId, "order_id": order.id, "quantity": quantity, "size": size, "subtotal": subtotal})
                 conn.commit()
             # OrderItemIdを基にOrderToppingをInsert
             with open('documents/cart_findOrderItemById_orderItems.txt', 'r') as txt:
@@ -192,16 +193,26 @@ def cart():
                             connOrderTopping = conn.execute(
                                 insertOrderTopping, {"toppingId": topping, "orderItemId": orderItemId})
                 conn.commit()
+        # 以下3つのSELECT文をResultSet的なテーブル結合で一度に取り出す。
+        with open('documents/cart_findOrderByUserId_orders.txt', 'r') as txt:
+            orderselect = text(txt.readline())
+            Cart = conn.execute(orderselect, {"id": id})
 
-        return render_template('cart_list.html')
+            for order in Cart:
+                with open('documents/cart_findByOrderId_orderItems.txt', 'r') as txt:
+                    orderItemselect = text(txt.readline())
+                    itemInCart = conn.execute(
+                        orderItemselect, {"orderid", order.id})
+
+                    for item in itemInCart:
+                        with open('documents/cart_findByOrderItemId_orderToppings.txt', 'r') as txt:
+                            orderToppingselect = text(txt.readline())
+                            toppingInCart = conn.execute(
+                                orderToppingselect, {"orderItemId", item.id})
+
+        return render_template('cart_list.html', Cart=Cart, itemInCart=itemInCart, toppingInCart=toppingInCart)
     else:
         return redirect("/")
-
-
-def json_serial(obj):
-    if isinstance(obj, (users)):
-        return obj.isoformat()
-    raise TypeError(f'Type {obj} not serializable')
 
 
 def login_check():
@@ -209,3 +220,35 @@ def login_check():
         return True
     else:
         return False
+
+
+def subtotal(itemId, size, toppingList, quantity):
+    subtotal = 0
+    if size == 'M':
+        with open('documents/subtotal_findById_items.txt', 'r') as txt:
+            itemselect = text(txt.readline())
+            connItem = conn.execute(itemselect, {"itemId": itemId})
+            for item in connItem:
+                for topping in toppingList:
+                    with open('documents/subtotal_findById_toppings.txt', 'r') as txt:
+                        toppingselect = text(txt.readline())
+                        connTopping = conn.execute(
+                            toppingselect, {"toppingId": topping})
+                        subtotal += connTopping.price_m
+                subtotal += item.price_m
+            subtotal = subtotal * quantity
+    else:
+        with open('documents/subtotal_findById_items.txt', 'r') as txt:
+            itemselect = text(txt.readline())
+            connItem = conn.execute(itemselect, {"itemId": itemId})
+            for item in connItem:
+                for topping in toppingList:
+                    with open('documents/subtotal_findById_toppings.txt', 'r') as txt:
+                        toppingselect = text(txt.readline())
+                        connTopping = conn.execute(
+                            toppingselect, {"toppingId": topping})
+                        subtotal += connTopping.price_l
+                subtotal += item.price_l
+            subtotal = subtotal * quantity
+            print(subtotal)
+    return subtotal

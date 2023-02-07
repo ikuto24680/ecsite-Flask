@@ -1,0 +1,1 @@
+SELECT id,name,price_m,price_l,image_path FROM items WHERE id = :itemId ;

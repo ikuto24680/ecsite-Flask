@@ -1,0 +1,1 @@
+SELECT id,name,price_m,price_l FROM toppings WHERE id = :toppingId;
