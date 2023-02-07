@@ -1,0 +1,1 @@
+INSERT INTO orders (user_id, status, total_price) VALUES (:userId, 0, 0);

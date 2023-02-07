@@ -1,0 +1,57 @@
+drop table users;
+
+create table users (
+ id serial primary key
+ , name varchar(100) not null
+ , email varchar(100) not null unique
+ , password text not null
+ , zipcode varchar(8) not null
+ , address varchar(200) not null
+ , telephone varchar(15) not null
+) ;
+
+drop table order_toppings;
+drop table order_items;
+drop table orders;
+
+--ユーザー登録(pass:morimori)
+insert into users(name, email, password, zipcode, address, telephone) values('テストユーザ', 'test@test.co.jp', '$2a$10$Utoo6nr3XIFEh4xOZ9Zr1.n/PtEYBb8HhlLDDklaJwsj.T3uux4kq','1111111', 'テスト住所', 'テスト電話番号');
+
+create table orders (
+  id serial primary key
+  , user_id integer not null
+  , status integer not null
+  , total_price integer not null
+  , order_date date
+  , destination_name varchar(100)
+  , destination_email varchar(100)
+  , destination_zipcode varchar(8)
+  , destination_address varchar(200)
+  , destination_tel varchar(15)
+  , delivery_time timestamp
+  , payment_method integer
+  ) ;
+
+  insert into orders (user_id,status,total_price) values(8,0,0);
+
+  create table order_items (
+  id serial primary key
+  , item_id integer not null
+  , order_id integer not null
+  , quantity integer not null
+  , size varchar(1)
+  , FOREIGN KEY (order_id) REFERENCES orders (id) on delete cascade
+) ;
+
+drop table if exists order_toppings cascade;
+
+create table order_toppings (
+  id serial primary key
+  , topping_id integer not null
+  , order_item_id integer not null
+  , FOREIGN KEY (order_item_id) REFERENCES order_items (id) on delete cascade
+) ;
+
+select * from orders;
+select * from order_items;
+select * from order_toppings;

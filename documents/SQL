@@ -98,6 +98,8 @@ create table orders (
   , payment_method integer
   ) ;
 
+  insert into orders (user_id,status,total_price) values(8,0,0);
+
 -- 注文商品
 drop table if exists order_items cascade;
 

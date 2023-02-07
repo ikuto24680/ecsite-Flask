@@ -52,7 +52,7 @@
       </div>
     </div>
   </header>
-  <form action="/cart/insertOrderItem}" method="post">
+  <form action="/cart" method="post">
     <div class="top-wrapper">
       <div class="container">
         <h1 class="page-title">{{item.name}}</h1>
@@ -132,7 +132,7 @@
           <span>この商品金額：<span id="show-total-price"></span> 円(税抜)</span>
         </div>
         <div class="row item-cart-btn">
-          <button class="btn" type="submit">
+          <button class="btn" type="submit" value="submit">
             <i class="material-icons left">add_shopping_cart</i>
             <span>カートに入れる</span>
           </button>

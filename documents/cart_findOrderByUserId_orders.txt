@@ -1,0 +1,1 @@
+SELECT orders.id, orders.user_id, orders.status, orders.total_price, orders.order_date, orders.destination_name, orders.destination_email, orders.destination_zipcode, orders.destination_tel, orders.delivery_time, orders.payment_method FROM orders WHERE orders.user_id = :id AND orders.status = 0;
