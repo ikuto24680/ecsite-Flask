@@ -67,58 +67,50 @@
                 <th>小計</th>
               </tr>
             </thead>
+            {% for order in HTMLOrderList %}
             <tbody>
               <tr th:each="orderItem : ${order.orderItemList}">
                 <td class="cart-item-name">
                   <div class="cart-item-icon">
-                    <img src="img/1.jpg" th:src="@{/img/}+${orderItem.item.imagePath}" />
+                    <img src="{{url_for('static',filename='img/{}.jpg'.format(order.i_id))}}" />
                   </div>
-                  <span th:text="${orderItem.item.name}">ハワイアンパラダイス</span>
+                  <span>{{order.i_name}}</span>
                 </td>
                 <td>
-                  <span class="price" th:text="${'&nbsp;'+orderItem.size}">&nbsp;Ｌ</span>
-                  <span th:if="${orderItem.size.compareTo('M') == 0}"
-                    th:text="${'&nbsp;&nbsp;'+orderItem.item.priceM+'円'}">&nbsp;&nbsp;2,380円</span>
-                  <span th:if="${orderItem.size.compareTo('L') == 0}"
-                    th:text="${'&nbsp;&nbsp;'+orderItem.item.priceL+'円'}"></span>
-                  <span th:text="${'&nbsp;&nbsp;'+orderItem.quantity+'個'}">&nbsp;&nbsp;1個</span>
+                  <span class="price">&nbsp {{order.oi_size}}</span>
+                  <span>&nbsp;&nbsp;{{order.oi_subtotal}} 円</span>
                 </td>
                 <td>
                   <ul>
-                    <li th:if="${orderItem.size.compareTo('M') == 0}"
-                      th:each="orderTopping : ${orderItem.orderToppingList}"
-                      th:text="${orderTopping.topping.name+' 200円'}">
-                    </li>
-                    <li th:if="${orderItem.size.compareTo('L') == 0}"
-                      th:each="orderTopping : ${orderItem.orderToppingList}"
-                      th:text="${orderTopping.topping.name+' 300円'}">
+                    <li>{{order.t_name}}
                     </li>
                   </ul>
                 </td>
                 <td>
-                  <div class="text-center">3,280円</div>
+                  <div class="text-center">小計:　{{order.oi_subtotal}}円</div>
                 </td>
                 <td>
-                  <form th:action="@{/cart/deleteOrderItem}" method="post">
+                  <form action="/delete" method="post">
                     <button class="btn" type="submit">
                       <span>削除</span>
                     </button>
-                    <input type="hidden" name="orderItemId" th:value="${orderItem.id}" />
+                    <input type="hidden" name="orderItemId" value="{{order.oi_id}}" />
                     <input type="hidden" name="toOrderConfirm" value="toCartList">
                   </form>
                 </td>
               </tr>
             </tbody>
+            {% endfor %}
           </table>
         </div>
 
         <div class="row cart-total-price">
-          <div>消費税：8,000円</div>
-          <div>ご注文金額合計：38,000円
+          <div>消費税：{{tax}}円</div>
+          <div>ご注文金額合計：{{totalprice}}円
             (税込)</div>
         </div>
         <div class="row order-confirm-btn">
-          <form th:action="@{/order/toOrder}">
+          <form action="/confirm">
             <button class="btn">
               <span>注文に進む</span>
             </button>

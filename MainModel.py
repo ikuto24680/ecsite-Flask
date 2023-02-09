@@ -58,7 +58,8 @@ order_items = Table(
     Column("item_id", Integer, nullable=False),
     Column("order_id", Integer, nullable=False),
     Column("quantity", Integer, nullable=False),
-    Column("size", String(1))
+    Column("size", String(1)),
+    Column("subtotal",Integer,nullable=False)
 )
 
 order_toppings = Table(

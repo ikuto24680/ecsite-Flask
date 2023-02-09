@@ -1,0 +1,1 @@
+SELECT id,item_id,order_id,quantity,size,subtotal FROM order_items WHERE order_id = :orderId;

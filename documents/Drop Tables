@@ -55,3 +55,5 @@ create table order_toppings (
 select * from orders;
 select * from order_items;
 select * from order_toppings;
+
+UPDATE orders SET (status=:statusA,total_price=:totalprice,order_date=:order_date,destination_name=:destination_name,destination_email=:destination_email,destination_zipcode=:destination_zipcode,destination_tel=:destination_tel,payment_method=:payment_method) WHERE id = :id;

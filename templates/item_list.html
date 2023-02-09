@@ -43,8 +43,7 @@
 
 						</i>カート <span th:text="${session.orderItemCount}"></span>
 					</a>
-					<span th:unless="${session.user}"><a th:href="@{/loginUser/toLogin}" class="login"> <i
-								class="fas fa-sign-in-alt"></i>ログイン</a>
+					<span th:unless="${session.user}"><a href="/confirm" class="login"> <i class="fas fa-sign-in-alt"></i>ログイン</a>
 					</span>
 					<span th:if="${session.user}"> <a th:href="@{/logoutUser/logout}">ログアウト</a>
 						　　　　　　　</span>
